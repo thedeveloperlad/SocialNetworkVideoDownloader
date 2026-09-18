@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -26,6 +27,11 @@ public class Main extends Application{
     Label inputLabel = new Label("Insert URL: ");
     TextField inputTextField = new TextField();
     Button submitButton = new Button("Submit");
+    CheckBox twitterCheckBox = new CheckBox("Twitter");
+    CheckBox facebookCheckBox = new CheckBox("Facebook");
+    CheckBox instagramCheckBox = new CheckBox("Instagram");
+    CheckBox mlbCheckBox = new CheckBox("MLB");
+
     Button downloadButton = new Button("Download");
 
     /* videoPane or imagePane */
@@ -35,6 +41,8 @@ public class Main extends Application{
     Image image = new Image(imageUrl);
     // Image image = new Image(getClass().getResourceAsStream("/images/logo.png"));
     ImageView imageView = new ImageView(image);
+
+    TwitterParser twitterParser = new TwitterParser();
 
     @Override
     public void start(Stage primaryStage) {
@@ -68,14 +76,32 @@ public class Main extends Application{
     }
 
     private void submitButtonClick(ActionEvent event) {
-        System.out.println("Button clicked via method reference!");
+        System.out.println("submitButton clicked via method reference!");
         String urlLink = inputTextField.getText();
 
+        if(twitterCheckBox.isSelected())
+        {
+            System.out.println("Twitter Checkbox is checked");
+            twitterParser.readTwitterAttributes(urlLink);
+            // Do Twitter parser
+        } else if(facebookCheckBox.isSelected())
+        {
+            System.out.println("Facebook Checkbox is checked");
+            // Do Facebook parser
+        } else if(instagramCheckBox.isSelected())
+        {
+            System.out.println("Instagram Checkbox is checked");
+            // Do Instagram parser
+        } else if(mlbCheckBox.isSelected())
+        {
+            System.out.println("MLB Checkbox is checked");
+            // Do MLB parser
+        }
 
     }
 
     private void downloadButtonClick(ActionEvent event) {
-        System.out.println("Button clicked via method reference!");
+        System.out.println("downloadButton clicked via method reference!");
         String urlLink = inputTextField.getText();
 
 
@@ -83,6 +109,7 @@ public class Main extends Application{
 
     public GridPane inputPanel() {
         HBox contentRow = new HBox(10);
+        HBox checkboxRow = new HBox(10);
         GridPane innerGrid = new GridPane();
 
         // Label paneTitle = new Label(" - Input - ");
@@ -109,6 +136,7 @@ public class Main extends Application{
         submitButton.setOnAction(this::submitButtonClick);
 
         contentRow.getChildren().addAll(inputLabel, inputTextField, submitButton);
+        contentRow.getChildren().addAll(twitterCheckBox, facebookCheckBox, instagramCheckBox, mlbCheckBox);
 
         Label paneTitle = new Label(" Input "); // Spaces prevent line collision
         paneTitle.setFont(Font.font("Arial", FontWeight.BOLD, 13));
@@ -117,6 +145,9 @@ public class Main extends Application{
         StackPane fieldset = new StackPane();
         fieldset.setStyle("-fx-border-color: #b0b0b0; -fx-border-width: 1px; -fx-border-radius: 3px;");
         fieldset.getChildren().addAll(contentRow, paneTitle);
+
+        // StackPane fieldsetCheckbox = new StackPane();
+        // fieldsetCheckbox.getChildren().addAll(checkboxRow);
 
         StackPane.setAlignment(paneTitle, Pos.TOP_LEFT);
         StackPane.setMargin(paneTitle, new Insets(-9, 0, 0, 15));
@@ -131,6 +162,7 @@ public class Main extends Application{
 
         // innerGrid.setMaxWidth(Double.MAX_VALUE);
         innerGrid.add(fieldset, 0,0);
+        // innerGrid.add(fieldsetCheckbox, 0,1);
 
         return innerGrid;
     }
@@ -169,7 +201,7 @@ public class Main extends Application{
 
         contentRow.getChildren().addAll(imageView);
 
-        Label paneTitle = new Label(" Video "); // Spaces prevent line collision
+        Label paneTitle = new Label(" Video - Image "); // Spaces prevent line collision
         paneTitle.setFont(Font.font("Arial", FontWeight.BOLD, 13));
         paneTitle.setStyle("-fx-background-color: -fx-background;");
 
@@ -198,30 +230,12 @@ public class Main extends Application{
         HBox contentRow = new HBox(10);
         GridPane innerGrid = new GridPane();
 
-        // Label paneTitle = new Label(" - Input - ");
-        // paneTitle.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 16));
-
         contentRow.setPadding(new Insets(8, 20, 10, 20));
         contentRow.setAlignment(Pos.CENTER);
-        // contentRow.setFillWidth(true);
-
-        /*BorderStroke stroke = new BorderStroke(
-                Color.DARKGREY,
-                BorderStrokeStyle.DASHED,
-                CornerRadii.EMPTY,
-                new BorderWidths(3)
-        );
-
-        contentRow.setBorder(new Border(stroke));*/
-
-        // inputLabel.setMaxWidth(Double.MAX_VALUE);
-        // inputTextField.setMaxWidth(280);
-        // HBox.setHgrow(inputTextField, Priority.SOMETIMES);
-        // submitButton.setMaxWidth(Double.MAX_VALUE);
 
         downloadButton.setOnAction(this::downloadButtonClick);
 
-        contentRow.getChildren().addAll(inputLabel, downloadButton);
+        contentRow.getChildren().addAll(downloadButton);
 
         Label paneTitle = new Label(" Download "); // Spaces prevent line collision
         paneTitle.setFont(Font.font("Arial", FontWeight.BOLD, 13));
