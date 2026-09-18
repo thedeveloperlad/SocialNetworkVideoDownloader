@@ -43,7 +43,7 @@ public class Main extends Application{
     ImageView imageView = new ImageView(image);
 
     TwitterParser twitterParser = new TwitterParser();
-
+    URLParser urlParser = new URLParser();
     @Override
     public void start(Stage primaryStage) {
 
@@ -81,8 +81,12 @@ public class Main extends Application{
 
         if(twitterCheckBox.isSelected())
         {
-            System.out.println("Twitter Checkbox is checked");
-            twitterParser.readTwitterAttributes(urlLink);
+            System.out.println("Twitter Checkbox is checked: ");
+            // twitterParser.readTwitterAttributes(urlLink);
+            String getHtmlStr = urlParser.getStringFromURL(urlLink);
+            System.out.println("HTML OBJECT STRING= \n");
+            System.out.println(getHtmlStr);
+            System.out.println("=HTML OBJECT STRING= \n");
             // Do Twitter parser
         } else if(facebookCheckBox.isSelected())
         {
