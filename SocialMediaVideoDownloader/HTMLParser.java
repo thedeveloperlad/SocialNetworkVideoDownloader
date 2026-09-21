@@ -2,13 +2,17 @@ import java.io.StringReader;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
+import static javax.swing.text.html.HTML.Tag.TITLE;
+
 public class HTMLParser {
     HTMLParser(){}
 
     public HTMLDocument getHtmlDocument(String htmlString) {
         try{
             HTMLEditorKit kit = new HTMLEditorKit();
-            return (HTMLDocument) kit.createDefaultDocument();
+            HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument();
+            kit.read(new StringReader(htmlString), doc, 0);
+            return doc;
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -23,5 +27,14 @@ public class HTMLParser {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public String getTitle(HTMLDocument doc){
+        try{
+            return doc.getProperty(TITLE).toString();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return "";
     }
 }
