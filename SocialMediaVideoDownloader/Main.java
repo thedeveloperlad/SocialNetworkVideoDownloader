@@ -44,6 +44,8 @@ public class Main extends Application{
 
     TwitterParser twitterParser = new TwitterParser();
     URLParser urlParser = new URLParser();
+    HTMLParser htmlParser = new HTMLParser();
+
     @Override
     public void start(Stage primaryStage) {
 
@@ -78,12 +80,16 @@ public class Main extends Application{
     private void submitButtonClick(ActionEvent event) {
         System.out.println("submitButton clicked via method reference!");
         String urlLink = inputTextField.getText();
+        String getHtmlStr = urlParser.getStringFromURL(urlLink);
+
+        String title = htmlParser.getTitle(htmlParser.getHtmlDocument(getHtmlStr));
+        System.out.println("Title: " + title);
 
         if(twitterCheckBox.isSelected())
         {
             System.out.println("Twitter Checkbox is checked: ");
             // twitterParser.readTwitterAttributes(urlLink);
-            String getHtmlStr = urlParser.getStringFromURL(urlLink);
+            // String getHtmlStr = urlParser.getStringFromURL(urlLink);
             System.out.println("HTML OBJECT STRING= \n");
             System.out.println(getHtmlStr);
             System.out.println("=HTML OBJECT STRING= \n");

@@ -1,40 +1,35 @@
-import java.io.StringReader;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-
-import static javax.swing.text.html.HTML.Tag.TITLE;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 public class HTMLParser {
     HTMLParser(){}
 
-    public HTMLDocument getHtmlDocument(String htmlString) {
-        try{
-            HTMLEditorKit kit = new HTMLEditorKit();
-            HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument();
-            kit.read(new StringReader(htmlString), doc, 0);
-            return doc;
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return null;
+    public Document getHtmlDocument(String htmlString) {
+        return Jsoup.parse(htmlString);
     }
 
-    public int getHtmlDocumentLength(HTMLDocument doc) {
+    public String getTitle(Document doc){
         try{
-            HTMLEditorKit kit = new HTMLEditorKit();
-            return doc.getLength();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    public String getTitle(HTMLDocument doc){
-        try{
-            return doc.getProperty(TITLE).toString();
+            return doc.title();
         }catch(Exception e){
             e.printStackTrace();
         }
         return "";
+    }
+
+    public String getHtml(Document doc){
+        try{
+            return doc.html();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    /*
+    *  Meta Extractor
+    * */
+    public String getMetaProperty(Document doc, String property){
+        return doc.select("meta[property=og:"+property+"]").attr("content");
     }
 }
