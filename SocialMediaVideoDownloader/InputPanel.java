@@ -20,6 +20,7 @@ public class InputPanel extends GridPane {
     CheckBox instagramCheckBox = new CheckBox("Instagram");
     CheckBox mlbCheckBox = new CheckBox("MLB");
 
+    TwitterParser twitterParser = new TwitterParser();
     URLParser urlParser = new URLParser();
     HTMLParser htmlParser = new HTMLParser();
 
@@ -79,56 +80,6 @@ public class InputPanel extends GridPane {
         // innerGrid.setMaxWidth(Double.MAX_VALUE);
         this.add(fieldset, 0,0);
     }
-
-    /*
-    public GridPane inputPanel() {
-        HBox contentRow = new HBox(10);
-        HBox checkboxRow = new HBox(10);
-        GridPane innerGrid = new GridPane();
-
-        contentRow.setPadding(new Insets(8, 20, 10, 20));
-        contentRow.setAlignment(Pos.CENTER);
-        // contentRow.setFillWidth(true);
-
-        inputLabel.setMaxWidth(Double.MAX_VALUE);
-        inputTextField.setMaxWidth(280);
-        HBox.setHgrow(inputTextField, Priority.SOMETIMES);
-        // submitButton.setMaxWidth(Double.MAX_VALUE);
-
-        submitButton.setOnAction(this::submitButtonClick);
-
-        contentRow.getChildren().addAll(inputLabel, inputTextField, submitButton);
-        contentRow.getChildren().addAll(twitterCheckBox, facebookCheckBox, instagramCheckBox, mlbCheckBox);
-
-        Label paneTitle = new Label(" Input "); // Spaces prevent line collision
-        paneTitle.setFont(Font.font("Arial", FontWeight.BOLD, 13));
-        paneTitle.setStyle("-fx-background-color: -fx-background;");
-
-        StackPane fieldset = new StackPane();
-        fieldset.setStyle("-fx-border-color: #b0b0b0; -fx-border-width: 1px; -fx-border-radius: 3px;");
-        fieldset.getChildren().addAll(contentRow, paneTitle);
-
-        // StackPane fieldsetCheckbox = new StackPane();
-        // fieldsetCheckbox.getChildren().addAll(checkboxRow);
-
-        StackPane.setAlignment(paneTitle, Pos.TOP_LEFT);
-        StackPane.setMargin(paneTitle, new Insets(-9, 0, 0, 15));
-
-        innerGrid.setMaxWidth(Double.MAX_VALUE);
-        innerGrid.setPadding(new Insets(15));
-
-        ColumnConstraints colConstraints = new ColumnConstraints();
-        colConstraints.setHgrow(Priority.ALWAYS);
-        colConstraints.setFillWidth(true);
-        innerGrid.getColumnConstraints().add(colConstraints);
-
-        // innerGrid.setMaxWidth(Double.MAX_VALUE);
-        innerGrid.add(fieldset, 0,0);
-        // innerGrid.add(fieldsetCheckbox, 0,1);
-
-        return innerGrid;
-    }
-    */
 
     private void submitButtonClick(ActionEvent event) {
         System.out.println("submitButton clicked via method reference!");
