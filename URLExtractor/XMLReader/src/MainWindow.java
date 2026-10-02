@@ -14,6 +14,8 @@ public class MainWindow {
         frame.setResizable(false);
 
         frame.add(new InputPanel());
+        frame.add(new XMLFileInformation());
+        frame.add(new UserInfoPanel());
 
         frame.setVisible(true);
     }
