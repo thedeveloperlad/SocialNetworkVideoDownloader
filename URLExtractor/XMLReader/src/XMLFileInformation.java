@@ -5,7 +5,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 public class XMLFileInformation extends JPanel {
-    JTextArea xmlLogTextArea = new JTextArea(22, 40);
+    private final JTextArea xmlLogTextArea = new JTextArea(22, 40);
     JScrollPane scrollPane = new JScrollPane(xmlLogTextArea);
 
     public XMLFileInformation(){
@@ -24,12 +24,14 @@ public class XMLFileInformation extends JPanel {
         gbc.gridy++;
     }
 
-    void setLogTextArea(String textInformation){
+    public void setLogTextArea(String textInformation){
+        System.out.println("XMLFileInformation.setLogTextArea()= ");
         System.out.println(textInformation);
         xmlLogTextArea.setText(textInformation);
+        // xmlLogTextArea.append(textInformation);
     }
 
-    String getLogTextArea(){
+    public String getLogTextArea(){
         return xmlLogTextArea.getText();
     }
 }
