@@ -2,10 +2,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -20,7 +17,7 @@ public class InputPanel extends GridPane {
     CheckBox instagramCheckBox = new CheckBox("Instagram");
     CheckBox mlbCheckBox = new CheckBox("MLB");
 
-    TwitterParser twitterParser = new TwitterParser();
+    // TwitterParser twitterParser = new TwitterParser();
     URLParser urlParser = new URLParser();
     HTMLParser htmlParser = new HTMLParser();
 
@@ -83,6 +80,15 @@ public class InputPanel extends GridPane {
 
     private void submitButtonClick(ActionEvent event) {
         System.out.println("submitButton clicked via method reference!");
+
+        if(inputTextField.getText().isEmpty()){
+            Alert a = new Alert(Alert.AlertType.NONE);
+            a.setAlertType(Alert.AlertType.ERROR);
+            a.setContentText("Please fill all the fields");
+            a.show();
+            return;
+        }
+
         String urlLink = inputTextField.getText();
         String getHtmlStr = urlParser.getStringFromURL(urlLink);
 
