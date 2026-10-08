@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import java.net.URL;
 
 public class InputPanel extends GridPane {
 
@@ -82,10 +83,12 @@ public class InputPanel extends GridPane {
         System.out.println("submitButton clicked via method reference!");
 
         if(inputTextField.getText().isEmpty()){
-            Alert a = new Alert(Alert.AlertType.NONE);
-            a.setAlertType(Alert.AlertType.ERROR);
-            a.setContentText("Please fill all the fields");
-            a.show();
+            errorMessage("Please fill all the fields");
+            return;
+        }
+
+        if(!isURL(inputTextField.getText())){
+            errorMessage("Not a valid URL");
             return;
         }
 
@@ -116,6 +119,22 @@ public class InputPanel extends GridPane {
         {
             System.out.println("MLB Checkbox is checked");
             // Do MLB parser
+        }
+    }
+
+    public void errorMessage(String message){
+        Alert a = new Alert(Alert.AlertType.NONE);
+        a.setAlertType(Alert.AlertType.ERROR);
+        a.setContentText(message);
+        a.show();
+    }
+
+    public static boolean isURL(String str) {
+        try {
+            new URL(str).toURI();
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 }
