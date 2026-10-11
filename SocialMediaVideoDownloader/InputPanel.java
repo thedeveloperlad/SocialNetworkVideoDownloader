@@ -6,6 +6,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import org.json.JSONObject;
+
 import java.net.URL;
 
 public class InputPanel extends GridPane {
@@ -21,6 +23,7 @@ public class InputPanel extends GridPane {
     // TwitterParser twitterParser = new TwitterParser();
     URLParser urlParser = new URLParser();
     HTMLParser htmlParser = new HTMLParser();
+    MLBParser mlbParser = new MLBParser();
 
     InputPanel(){
         HBox contentRow = new HBox(10);
@@ -95,9 +98,6 @@ public class InputPanel extends GridPane {
         String urlLink = inputTextField.getText();
         String getHtmlStr = urlParser.getStringFromURL(urlLink);
 
-        String title = htmlParser.getTitle(htmlParser.getHtmlDocument(getHtmlStr));
-        System.out.println("Title: " + title);
-
         if(twitterCheckBox.isSelected())
         {
             System.out.println("Twitter Checkbox is checked: ");
@@ -119,6 +119,17 @@ public class InputPanel extends GridPane {
         {
             System.out.println("MLB Checkbox is checked");
             // Do MLB parser
+            String title = htmlParser.getTitle(htmlParser.getHtmlDocument(getHtmlStr));
+            String mlbJsonRaw = htmlParser.getMetaContentByScriptType(htmlParser.getHtmlDocument(getHtmlStr),"application/ld+json");
+
+            JSONObject mlbJson = mlbParser.mlbParserFile(getHtmlStr);
+
+            System.out.println("Title: " + title);
+            System.out.println("JSON MLB name: " + mlbJson.getString("name"));
+            System.out.println("JSON MLB link: " + mlbJson.getString("link"));
+            System.out.println("JSON MLB image: " + mlbJson.getString("image"));
+            System.out.println("JSON MLB description: " + mlbJson.getString("description"));
+
         }
     }
 
