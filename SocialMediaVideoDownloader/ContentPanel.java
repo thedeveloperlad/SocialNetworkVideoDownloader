@@ -7,6 +7,8 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 
 public class ContentPanel extends GridPane {
@@ -16,10 +18,16 @@ public class ContentPanel extends GridPane {
     String imageUrl = file.toURI().toString();
     Image image = new Image(imageUrl);
     // Image image = new Image(getClass().getResourceAsStream("/images/logo.png"));
+    Label name = new Label("Name");
+    Label description = new Label("Description");
+    Label title = new Label("Title");
+    Label thumbnailUrl = new Label("Image URL");
     ImageView imageView = new ImageView(image);
 
     ContentPanel() {
-        HBox contentRow = new HBox(10);
+        // HBox contentRow = new HBox(10);
+        VBox contentRow = new VBox(10);
+        GridBagConstraints gbc = new GridBagConstraints();
         // GridPane innerGrid = new GridPane();
 
         // Label paneTitle = new Label(" - Input - ");
@@ -50,7 +58,16 @@ public class ContentPanel extends GridPane {
 
         // submitButton.setOnAction(this::submitButtonClick);
 
+        // contentRow.getChildren().addAll(name, description, title, thumbnailUrl, imageView);
+
+        contentRow.getChildren().addAll(name);
+        contentRow.getChildren().addAll(description);
+        // contentRow.getChildren().addAll(title);
+        contentRow.getChildren().addAll(thumbnailUrl);
+
         contentRow.getChildren().addAll(imageView);
+
+        // setName(fileStructure.getName());
 
         Label paneTitle = new Label(" Video - Image "); // Spaces prevent line collision
         paneTitle.setFont(Font.font("Arial", FontWeight.BOLD, 13));
@@ -73,6 +90,28 @@ public class ContentPanel extends GridPane {
 
         // innerGrid.setMaxWidth(Double.MAX_VALUE);
         this.add(fieldset, 0,0);
+    }
+
+    public void setImage(String imageUrl){
+        // sFile file = new File(imageUrl);
+        Image image = new Image(imageUrl);
+        imageView.setImage(image);
+    }
+
+    public void setName(String text){
+        name.setText(text);
+    }
+
+    public void setDescription(String text){
+        description.setText(text);
+    }
+
+    public void setTitle(String text){
+        title.setText(text);
+    }
+
+    public void setThumbnailUrl(String text){
+        thumbnailUrl.setText(text);
     }
 
     private GridPane videoPane() {
