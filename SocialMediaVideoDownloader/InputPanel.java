@@ -25,7 +25,10 @@ public class InputPanel extends GridPane {
     HTMLParser htmlParser = new HTMLParser();
     MLBParser mlbParser = new MLBParser();
 
-    InputPanel(){
+    private final ContentPanel contPanel;
+
+    InputPanel(ContentPanel contentPanel) {
+        this.contPanel = contentPanel;
         HBox contentRow = new HBox(10);
         HBox checkboxRow = new HBox(10);
         // GridPane innerGrid = new GridPane();
@@ -130,6 +133,32 @@ public class InputPanel extends GridPane {
             System.out.println("JSON MLB image: " + mlbJson.getString("image"));
             System.out.println("JSON MLB description: " + mlbJson.getString("description"));
 
+            //SEND CONTENT TO ContentPanel class.
+            FileStructure fileStructure = new FileStructure(title,
+                    mlbJson.getString("link"),
+                    mlbJson.getString("name"),
+                    mlbJson.getString("description"),
+                    mlbJson.getString("image"), "", "", "", "");
+
+            // ContentPanel contentPanel = new ContentPanel();
+            contPanel.setName(mlbJson.getString("name"));
+            contPanel.setDescription(mlbJson.getString("description"));
+            contPanel.setThumbnailUrl(mlbJson.getString("link"));
+            contPanel.setImage(mlbJson.getString("image"));
+
+            /*
+            public FileStructure(String title, String urlMp4, String name, String description, String thumbnailUrl, String uploadDate, String duration, String contentUrl, String embedUrl) {
+        this.title = title;
+        this.urlMp4 = urlMp4;
+        this.name = name;
+        this.description = description;
+        this.thumbnailUrl = thumbnailUrl;
+        this.uploadDate = uploadDate;
+        this.duration = duration;
+        this.contentUrl = contentUrl;
+        this.embedUrl = embedUrl;
+    }
+            * */
         }
     }
 

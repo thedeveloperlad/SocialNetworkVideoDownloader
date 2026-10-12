@@ -25,8 +25,8 @@ import java.io.File;
 
 public class Main extends Application {
 
-    InputPanel inputPane = new InputPanel();
     ContentPanel contentPanel = new ContentPanel();
+    InputPanel inputPane = new InputPanel(contentPanel);
     DownloadPanel downloadPanel = new DownloadPanel();
 
     @Override
