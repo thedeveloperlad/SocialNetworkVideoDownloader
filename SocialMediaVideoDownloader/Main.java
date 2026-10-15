@@ -27,7 +27,7 @@ public class Main extends Application {
 
     ContentPanel contentPanel = new ContentPanel();
     InputPanel inputPane = new InputPanel(contentPanel);
-    DownloadPanel downloadPanel = new DownloadPanel();
+    DownloadPanel downloadPanel = new DownloadPanel(inputPane);
 
     @Override
     public void start(Stage primaryStage) {

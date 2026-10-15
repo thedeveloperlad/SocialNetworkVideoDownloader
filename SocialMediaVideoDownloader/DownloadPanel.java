@@ -10,8 +10,10 @@ import javafx.scene.text.FontWeight;
 public class DownloadPanel extends GridPane {
 
     Button downloadButton = new Button("Download");
+    InputPanel inputPanel;
 
-    DownloadPanel() {
+    DownloadPanel(InputPanel intPanel) {
+        this.inputPanel = intPanel;
         HBox contentRow = new HBox(10);
 
         contentRow.setPadding(new Insets(8, 20, 10, 20));
@@ -46,6 +48,8 @@ public class DownloadPanel extends GridPane {
 
     private void downloadButtonClick(ActionEvent event) {
         System.out.println("downloadButton clicked via method reference!");
+
+        System.out.println("URL: " + inputPanel.getUrlText());
         // String urlLink = inputTextField.getText();
     }
 }

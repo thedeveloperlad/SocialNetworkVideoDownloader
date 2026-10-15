@@ -19,6 +19,7 @@ public class InputPanel extends GridPane {
     CheckBox facebookCheckBox = new CheckBox("Facebook");
     CheckBox instagramCheckBox = new CheckBox("Instagram");
     CheckBox mlbCheckBox = new CheckBox("MLB");
+    private String urlDownload = new String("");
 
     // TwitterParser twitterParser = new TwitterParser();
     URLParser urlParser = new URLParser();
@@ -140,6 +141,8 @@ public class InputPanel extends GridPane {
                     mlbJson.getString("description"),
                     mlbJson.getString("image"), "", "", "", "");
 
+            setUrlText(fileStructure.getUrlMp4());
+
             // ContentPanel contentPanel = new ContentPanel();
             contPanel.setName(mlbJson.getString("name"));
             contPanel.setDescription(mlbJson.getString("description"));
@@ -176,5 +179,13 @@ public class InputPanel extends GridPane {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public void setUrlText(String url){
+        urlDownload = url;
+    }
+
+    public String getUrlText(){
+        return urlDownload;
     }
 }
