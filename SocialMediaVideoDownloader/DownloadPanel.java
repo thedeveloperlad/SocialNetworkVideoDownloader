@@ -3,21 +3,28 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javafx.concurrent.Task;
+
 public class DownloadPanel extends GridPane {
 
+    Label statusLabel = new Label("");
     Button downloadButton = new Button("Download");
     InputPanel inputPanel;
+    ProgressBar progressBar = new ProgressBar(0);
+    // progressBar.setPrefWidth(300);
 
     DownloadPanel(InputPanel intPanel) {
         this.inputPanel = intPanel;
@@ -28,7 +35,7 @@ public class DownloadPanel extends GridPane {
 
         downloadButton.setOnAction(this::downloadButtonClick);
 
-        contentRow.getChildren().addAll(downloadButton);
+        contentRow.getChildren().addAll(downloadButton, statusLabel);
 
         Label paneTitle = new Label(" Download "); // Spaces prevent line collision
         paneTitle.setFont(Font.font("Arial", FontWeight.BOLD, 13));
@@ -63,12 +70,37 @@ public class DownloadPanel extends GridPane {
 
     }
 
-    // Method added from page: 
+    // Method added from page:
     public void safeFile(String src) throws IOException {
+        downloadButton.setDisable(true);
+        statusLabel.setText("Downloading...");
+
+
         Path downloadsPath = Paths.get(System.getProperty("user.home"), "Downloads");
 
+        DownloadTask downloadTask = new DownloadTask(src, downloadsPath.toString());
+
+        progressBar.progressProperty().bind(downloadTask.progressProperty());
+
+        // Handle lifecycle updates safely on the JavaFX Thread
+        downloadTask.setOnSucceeded(event -> {
+            statusLabel.setText("Download complete!");
+            downloadButton.setDisable(false);
+            statusLabel.setText("");
+        });
+
+        downloadTask.setOnFailed(event -> {
+            statusLabel.setText("Download failed: " + downloadTask.getException().getMessage());
+            downloadButton.setDisable(false);
+        });
+
+        // 4. Run the Task on a Background Thread
+        Thread thread = new Thread(downloadTask);
+        thread.setDaemon(true); // Ensures thread closes if application closes
+        thread.start();
+
         //Exctract the name of the video from the src attribute
-        int indexname = src.lastIndexOf("/");
+        /*int indexname = src.lastIndexOf("/");
 
         if (indexname == src.length()) {
             src = src.substring(1, indexname);
@@ -87,6 +119,63 @@ public class DownloadPanel extends GridPane {
             out.write(b);
         }
         out.close();
-        in.close();
+        in.close();*/
+    }
+
+    private static class DownloadTask extends Task<Void> {
+        private String fileUrl;
+        private final String savePath;
+
+        public DownloadTask(String fileUrl, String savePath) {
+            this.fileUrl = fileUrl;
+            this.savePath = savePath;
+        }
+
+        @Override
+        protected Void call() throws Exception {
+            URL url = new URL(fileUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // Get total file size to determine percentage calculation
+            long fileLength = connection.getContentLengthLong();
+
+            int indexname = fileUrl.lastIndexOf("/");
+
+            if (indexname == fileUrl.length()) {
+                fileUrl = fileUrl.substring(1, indexname);
+            }
+
+            indexname = fileUrl.lastIndexOf("/");
+            String name = fileUrl.substring(indexname, fileUrl.length());
+
+            System.out.println("Name File: " + name);
+
+            try (InputStream input = new BufferedInputStream(connection.getInputStream());
+                 FileOutputStream output = new FileOutputStream(savePath + name)) {
+
+                byte[] data = new byte[4096];
+                long totalBytesRead = 0;
+                int bytesRead;
+
+                while ((bytesRead = input.read(data)) != -1) {
+                    // Check if user canceled task
+                    if (isCancelled()) {
+                        break;
+                    }
+
+                    output.write(data, 0, bytesRead);
+                    totalBytesRead += bytesRead;
+
+                    // If file size is known, update progress (current value, max value)
+                    if (fileLength > 0) {
+                        updateProgress(totalBytesRead, fileLength);
+                    } else {
+                        // Fallback: Indeterminate status if Content-Length is missing
+                        updateProgress(-1, 100);
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
