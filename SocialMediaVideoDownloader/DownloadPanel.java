@@ -7,6 +7,13 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class DownloadPanel extends GridPane {
 
     Button downloadButton = new Button("Download");
@@ -47,9 +54,39 @@ public class DownloadPanel extends GridPane {
     }
 
     private void downloadButtonClick(ActionEvent event) {
-        System.out.println("downloadButton clicked via method reference!");
-
         System.out.println("URL: " + inputPanel.getUrlText());
-        // String urlLink = inputTextField.getText();
+        try{
+            safeFile(inputPanel.getUrlText());
+        } catch(Exception e){
+            System.out.println("Exception caught!");
+        }
+
+    }
+
+    // Method added from page: 
+    public void safeFile(String src) throws IOException {
+        Path downloadsPath = Paths.get(System.getProperty("user.home"), "Downloads");
+
+        //Exctract the name of the video from the src attribute
+        int indexname = src.lastIndexOf("/");
+
+        if (indexname == src.length()) {
+            src = src.substring(1, indexname);
+        }
+
+        indexname = src.lastIndexOf("/");
+        String name = src.substring(indexname, src.length());
+
+        System.out.println(name);
+
+        //Open a URL Stream
+        URL url = new URL(src);
+        InputStream in = url.openStream();
+        OutputStream out = new BufferedOutputStream(new FileOutputStream( downloadsPath + name));
+        for (int b; (b = in.read()) != -1;) {
+            out.write(b);
+        }
+        out.close();
+        in.close();
     }
 }
