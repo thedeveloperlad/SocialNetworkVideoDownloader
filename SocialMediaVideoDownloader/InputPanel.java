@@ -24,6 +24,7 @@ public class InputPanel extends GridPane {
     // TwitterParser twitterParser = new TwitterParser();
     URLParser urlParser = new URLParser();
     HTMLParser htmlParser = new HTMLParser();
+    TwitterXParser twitterXParser = new TwitterXParser();
     MLBParser mlbParser = new MLBParser();
 
     private final ContentPanel contPanel;
@@ -105,12 +106,41 @@ public class InputPanel extends GridPane {
         if(twitterCheckBox.isSelected())
         {
             System.out.println("Twitter Checkbox is checked: ");
-            // twitterParser.readTwitterAttributes(urlLink);
-            // String getHtmlStr = urlParser.getStringFromURL(urlLink);
-            System.out.println("HTML OBJECT STRING= \n");
-            System.out.println(getHtmlStr);
-            System.out.println("=HTML OBJECT STRING= \n");
-            // Do Twitter parser
+
+            if(urlLink.contains("?s=20")){
+                urlLink = urlLink.replace("?s=20","/video/1");
+            }
+
+            getHtmlStr = urlParser.getStringFromURL(urlLink);
+            String description = htmlParser.getMetaProperty(htmlParser.getHtmlDocument(getHtmlStr), "description");
+            String urlImageTwitter =  htmlParser.getMetaProperty(htmlParser.getHtmlDocument(getHtmlStr), "image");
+
+            if(urlImageTwitter.contains("?format=webp&name=large")){
+                urlImageTwitter = urlImageTwitter.replace("?format=webp&name=large",".jpg");
+            }
+
+            String dataRawStream = htmlParser.getMediaDataScriptType(htmlParser.getHtmlDocument(getHtmlStr));
+            JSONObject twitterXJson = twitterXParser.TwitterXParserFile(dataRawStream);
+            // System.out.println("Data Stream= \n" + twitterXJson);
+
+            String videoTwitterLink = twitterXJson.getString("1280x720");
+            if(videoTwitterLink.contains("?tag=29")){
+                videoTwitterLink = videoTwitterLink.replace("?tag=29","");
+            }
+            //SEND CONTENT TO ContentPanel class.
+            FileStructure fileStructure = new FileStructure("N/A",
+                    videoTwitterLink,
+                    "N/A",
+                    description,
+                    urlImageTwitter, "", "", "", "");
+
+            setUrlText(fileStructure.getUrlMp4());
+
+            contPanel.setName("N/A");
+            contPanel.setDescription(description);
+            contPanel.setThumbnailUrl(twitterXJson.getString("1280x720"));
+            contPanel.setImage(urlImageTwitter);
+
         } else if(facebookCheckBox.isSelected())
         {
             System.out.println("Facebook Checkbox is checked");

@@ -28,6 +28,32 @@ public class HTMLParser {
         return "";
     }
 
+    // <script nonce="L9qjo6405c+mjSSOue4NGw==" data-tsr-stream-part="">
+    public static String getMediaDataScriptType(Document document) {
+        // Use a CSS selector to find the specific meta tag
+        Element scriptElement = document.select("script[data-tsr-stream-part]").first();
+        String scriptData = "";
+        for (Element script : scriptElement) {
+            String nonce = script.attr("nonce");
+
+            // NOTE: .data() extract data content
+            scriptData = script.data();
+
+            /*
+            @debug // TESTING
+            System.out.println("Nonce detected: " + nonce);
+            System.out.println("Streams:");
+            System.out.println(scriptData.trim());
+
+            */
+        }
+
+        if(scriptElement != null){
+            return scriptData;
+        }
+        return "";
+    }
+
     /*
     *  Meta Extractor
     * */
