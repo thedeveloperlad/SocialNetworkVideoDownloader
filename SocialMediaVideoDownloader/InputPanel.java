@@ -124,9 +124,8 @@ public class InputPanel extends GridPane {
             // System.out.println("Data Stream= \n" + twitterXJson);
 
             String videoTwitterLink = twitterXJson.getString("1280x720");
-            if(videoTwitterLink.contains("?tag=29")){
-                videoTwitterLink = videoTwitterLink.replace("?tag=29","");
-            }
+            videoTwitterLink = videoTwitterLink.replaceAll("\\?tag=\\d+", "");
+
             //SEND CONTENT TO ContentPanel class.
             FileStructure fileStructure = new FileStructure("N/A",
                     videoTwitterLink,
