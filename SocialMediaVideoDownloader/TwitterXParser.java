@@ -10,11 +10,19 @@ import java.util.regex.Pattern;
 
 public class TwitterXParser {
 
-    String []fileResolutions = {"m3u8_file", "480x270", "640x360", "1280x720", "1920x1080"};
+    String []fileResolutions = {"m3u8_file", "480x270", "640x360", "1280x720", "1920x1080", "3840x2160"};
+    int MAX_OBJECT_ROW = 120;
 
     public JSONObject TwitterXParserFile(String htmlString){
         JSONObject jsonObject = new JSONObject();
-        String rawTwitterJson = twitterMediaExtractor(htmlString);
+        String rawTwitterJson = "";
+        for(int objectrow=0; objectrow<MAX_OBJECT_ROW;objectrow++) {
+            rawTwitterJson = XJsonMediaExtractor(htmlString, objectrow);
+            if(!rawTwitterJson.equals("")){
+                break; // stop the thread.
+            }
+        }
+
         try {
             JSONObject twitterXJsonObject = new JSONObject(rawTwitterJson);
 
@@ -50,13 +58,53 @@ public class TwitterXParser {
         return jsonObject;
     }
 
-    public String twitterMediaExtractor(String jsonRawStr){
+    public String XJsonMediaExtractor(String htmlString, int row){
+
+        // @ TESTING ROW
+        // System.out.println("RAW: " + htmlString);
+        String xTwitterJsonRaw = "";
+
+        String startMarker = "result:$R[" + row + "]={kind:\"Result.Ok\"";
+        String endMarker = "],graphqlRequestStream:";
+
+        int markerStartIndex = htmlString.indexOf(startMarker);
+
+        if (markerStartIndex != -1) {
+            int jsonStartIndex = htmlString.indexOf(startMarker);
+            int jsonEndIndex = htmlString.indexOf(endMarker);
+
+            if (jsonEndIndex != -1 && jsonEndIndex >= jsonStartIndex) {
+                String part1 = htmlString.substring(0, jsonStartIndex);
+                String part2 = htmlString.substring(jsonStartIndex, jsonEndIndex);
+                String part3 = htmlString.substring(jsonEndIndex);
+
+                System.out.println("¡Match found in row = " + row + "!");
+                System.out.println("part 2 (JSON): " + part2);
+                xTwitterJsonRaw =  part2;
+                String blockToDelete = "result:$R[" + row + "]=";
+                xTwitterJsonRaw = xTwitterJsonRaw.replace(blockToDelete, "");
+                System.out.println("Row " + row + " processed.");
+            } else {
+                System.out.println("ALERT: Row not found." + row);
+            }
+        }
+        return xTwitterJsonRaw;
+    }
+
+    public String twitterMediaExtractor(String jsonRawStr, int row){
         System.out.println("RAW: " + jsonRawStr);
         String twitterJsonRaw = "";
         // result:$R[27]=
-        // "media_entities2":[
-        Pattern pattern = Pattern.compile("\\$R\\[(27)\\]\\s*=\\s*");
+        // \"media_entities2\":[
+        // "core\":{
+        // ^=\{kind:"Result\.Ok",value:"(.*)"
+        // Pattern pattern = Pattern.compile("\\$R\\[(27)\\]\\s*=\\s*");
+        // Pattern pattern = Pattern.compile("^=\\{kind:\"Result\\.Ok\",value:\"(.*)\"");
         // Pattern pattern = Pattern.compile("\"media_entities2\":\\[");
+        // Pattern pattern = Pattern.compile("^result:\\$R\\[" + row + "\\]=\\{kind:\"Result\\.Ok\",value:\\{\"(.*)\"");
+        Pattern pattern = Pattern.compile("result:\\$R\\[" + row + "\\]=\\{kind:\"Result\\.Ok\",value:\"(.*?)\"\\}");
+        // Pattern pattern = Pattern.compile("result:\\$R\\[" + row + "\\]=\\{kind:\"Result\\.Ok\",value:\"((?:\\\\\"|[^\"])*)\"\\}");
+        // Pattern pattern = Pattern.compile("result:\\$R\\[" + row + "\\]=\\{kind:\"Result\\.Ok\",value:\"((?:\\\\\"|[^\"])*)\"\\}");
         Matcher matcher = pattern.matcher(jsonRawStr);
 
         if (matcher.find()) {
@@ -64,11 +112,24 @@ public class TwitterXParser {
 
             // Extract the raw JSON block by balancing the opening and closing characters.
             String rawJson = extractBalancedJson(jsonRawStr, startIndexOfJson);
-            twitterJsonRaw = rawJson;
+            System.out.println("rawJson= " + rawJson);
+            twitterJsonRaw = rawJson.replaceFirst("^,", "{");
+            // twitterJsonRaw = rawJson.replaceFirst("^,core", "\"core\":{\"user_results\":{");
+            // "core":{"user_results":{
+            String add = "{\"value\":{\"data\":{\"tweet_result_by_rest_id\":{\"id\":\"\",\"rest_id\":\"\",\"result\":{\"__typename\":\"Tweet\",\"cashtag_attachments\":[],";
+            System.out.println("add= " + add);
+            // twitterJsonRaw += add;
+            twitterJsonRaw = add + twitterJsonRaw;
+            twitterJsonRaw = twitterJsonRaw.replace("\\\"", "\"");
+            twitterJsonRaw = removeBlock(twitterJsonRaw, "}}],graphqlRequestStream:");
+            // twitterJsonRaw = rawJson;
         } else {
-            System.out.println(""+pattern.toString()+ "is not found.");
+            // System.out.println(""+pattern.toString()+ "is not found.");
             return "";
         }
+        twitterJsonRaw = twitterJsonRaw.replace("[],{\"core\":", "],\"core\":");
+
+        System.out.println("twitterMediaExtractor(): "+ twitterJsonRaw);
         return twitterJsonRaw;
     }
 
@@ -111,6 +172,15 @@ public class TwitterXParser {
         }
 
         return text.substring(startIndex); // Fallback in case it doesn't close properly
+    }
+
+    private static String removeBlock(String str, String block) {
+        String[] parts = {};
+        System.out.println("removeBlock(): " + block);
+        if(str.contains(block)){
+            parts = str.split(block, 2);
+        }
+        return parts[0];
     }
 }
 
