@@ -19,6 +19,7 @@ public class InputPanel extends GridPane {
     CheckBox facebookCheckBox = new CheckBox("Facebook");
     CheckBox instagramCheckBox = new CheckBox("Instagram");
     CheckBox mlbCheckBox = new CheckBox("MLB");
+    CheckBox milbCheckBox = new CheckBox("MiLB");
     private String urlDownload = new String("");
 
     // TwitterParser twitterParser = new TwitterParser();
@@ -26,6 +27,7 @@ public class InputPanel extends GridPane {
     HTMLParser htmlParser = new HTMLParser();
     TwitterXParser twitterXParser = new TwitterXParser();
     MLBParser mlbParser = new MLBParser();
+    MiLBParser milbParser = new MiLBParser();
 
     private final ContentPanel contPanel;
 
@@ -59,7 +61,7 @@ public class InputPanel extends GridPane {
         submitButton.setOnAction(this::submitButtonClick);
 
         contentRow.getChildren().addAll(inputLabel, inputTextField, submitButton);
-        contentRow.getChildren().addAll(twitterCheckBox, facebookCheckBox, instagramCheckBox, mlbCheckBox);
+        contentRow.getChildren().addAll(twitterCheckBox, facebookCheckBox, instagramCheckBox, mlbCheckBox, milbCheckBox);
 
         Label paneTitle = new Label(" Input "); // Spaces prevent line collision
         paneTitle.setFont(Font.font("Arial", FontWeight.BOLD, 13));
@@ -191,6 +193,32 @@ public class InputPanel extends GridPane {
         this.embedUrl = embedUrl;
     }
             * */
+        } else if(milbCheckBox.isSelected()) {
+            System.out.println("MiLB Checkbox is checked");
+            // String mlbJsonRaw = htmlParser.getMetaContentByScriptType(htmlParser.getHtmlDocument(getHtmlStr),"application/ld+json");
+            String [] milbScriptRaw = htmlParser.getContentByScript(htmlParser.getHtmlDocument(getHtmlStr));
+            String milbJsonRaw = milbParser.getJSONString(milbScriptRaw);
+            milbJsonRaw = milbParser.removeInitData(milbJsonRaw);
+            System.out.println("milbJsonRaw: ");
+            System.out.println(milbJsonRaw);
+            System.out.println("\n");
+
+            JSONObject milbJson = milbParser.milbParserFile(milbJsonRaw);
+
+            FileStructure fileStructure = new FileStructure(milbJson.getString("name"),
+                    milbJson.getString("link"),
+                    milbJson.getString("name"),
+                    milbJson.getString("description"),
+                    milbJson.getString("image"), "", "", "", "");
+
+            setUrlText(fileStructure.getUrlMp4());
+
+            // ContentPanel contentPanel = new ContentPanel();
+            contPanel.setName(milbJson.getString("name"));
+            contPanel.setDescription(milbJson.getString("description"));
+            contPanel.setThumbnailUrl(milbJson.getString("link"));
+            // contPanel.setImage(milbJson.getString("image"));
+            contPanel.setImage(milbJson.getString("link"));
         }
     }
 

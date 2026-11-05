@@ -3,6 +3,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HTMLParser {
     HTMLParser(){}
 
@@ -78,5 +81,18 @@ public class HTMLParser {
             return scriptElement.data().trim();
         }
         return "";
+    }
+
+    public static String[] getContentByScript(Document document) {
+        // Use a CSS selector to find the specific meta tag
+        List<String> scriptContents = new ArrayList<>();
+        Elements scripts = document.select("script");
+
+        for (Element script : scripts) {
+            if (!script.hasAttr("src")) {
+                scriptContents.add(script.data());
+            }
+        }
+        return scriptContents.toArray(new String[0]);
     }
 }
