@@ -47,10 +47,11 @@ public class Main extends Application {
 
 
         //VBox root = new VBox(10, textField, button);
-        Scene scene = new Scene(gridPane, 800, 600);
+        // Scene scene = new Scene(gridPane, 800, 600);
+        Scene scene = new Scene(gridPane, Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT);
         primaryStage.getIcons().add(new Image("/app_icons/app_icon.png"));
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Social Media Downloader");
+        primaryStage.setTitle(Config.APP_TITLE);
         primaryStage.show();
     }
 

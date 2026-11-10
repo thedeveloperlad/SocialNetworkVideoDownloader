@@ -20,6 +20,7 @@ public class InputPanel extends GridPane {
     CheckBox instagramCheckBox = new CheckBox("Instagram");
     CheckBox mlbCheckBox = new CheckBox("MLB");
     CheckBox milbCheckBox = new CheckBox("MiLB");
+    CheckBox dailyMotionCheckBox = new CheckBox("Dailymotion");
     private String urlDownload = new String("");
 
     // TwitterParser twitterParser = new TwitterParser();
@@ -28,6 +29,7 @@ public class InputPanel extends GridPane {
     TwitterXParser twitterXParser = new TwitterXParser();
     MLBParser mlbParser = new MLBParser();
     MiLBParser milbParser = new MiLBParser();
+    DailyMotionParser dailyMotionParser = new DailyMotionParser();
 
     private final ContentPanel contPanel;
 
@@ -61,7 +63,7 @@ public class InputPanel extends GridPane {
         submitButton.setOnAction(this::submitButtonClick);
 
         contentRow.getChildren().addAll(inputLabel, inputTextField, submitButton);
-        contentRow.getChildren().addAll(twitterCheckBox, facebookCheckBox, instagramCheckBox, mlbCheckBox, milbCheckBox);
+        contentRow.getChildren().addAll(twitterCheckBox, facebookCheckBox, instagramCheckBox, mlbCheckBox, milbCheckBox, dailyMotionCheckBox);
 
         Label paneTitle = new Label(" Input "); // Spaces prevent line collision
         paneTitle.setFont(Font.font("Arial", FontWeight.BOLD, 13));
@@ -219,6 +221,18 @@ public class InputPanel extends GridPane {
             contPanel.setThumbnailUrl(milbJson.getString("link"));
             // contPanel.setImage(milbJson.getString("image"));
             contPanel.setImage(milbJson.getString("link"));
+        } else if(dailyMotionCheckBox.isSelected()) {
+            System.out.println("dailyMotion Checkbox is checked");
+            String dailyMotionID = dailyMotionParser.getDailyMotionID(urlLink);
+            System.out.println("dailyMotionID= " + dailyMotionID);
+            String dailyMotionAPIUrl = dailyMotionParser.getDailyMotionURLApi(dailyMotionID);
+            System.out.println("dailyMotionAPIUrl= " + dailyMotionAPIUrl);
+            // String dailyMotionJsonRaw = htmlParser.getBody(htmlParser.getHtmlDocument(dailyMotionAPIUrl));
+
+            String dailyMotionJsonRaw = urlParser.getStringFromURL(dailyMotionAPIUrl);
+            System.out.println("dailyMotionJsonRaw= " + dailyMotionJsonRaw);
+
+            JSONObject dailyMotionJson = dailyMotionParser.dailyMotionParserFile(dailyMotionJsonRaw, urlLink);
         }
     }
 

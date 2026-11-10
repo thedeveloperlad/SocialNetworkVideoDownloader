@@ -31,6 +31,15 @@ public class HTMLParser {
         return "";
     }
 
+    public String getBody(Document doc){
+        try{
+            return doc.body().html();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     // <script nonce="L9qjo6405c+mjSSOue4NGw==" data-tsr-stream-part="">
     public static String getMediaDataScriptType(Document document) {
         // Use a CSS selector to find the specific meta tag
