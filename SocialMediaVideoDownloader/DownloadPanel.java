@@ -15,6 +15,8 @@ import java.net.URL;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.concurrent.Task;
 
@@ -63,7 +65,13 @@ public class DownloadPanel extends GridPane {
     private void downloadButtonClick(ActionEvent event) {
         System.out.println("URL: " + inputPanel.getUrlText());
         try{
-            safeFile(inputPanel.getUrlText());
+            if(inputPanel.getUrlText().contains("dailymotion")){
+                System.out.println("Inside if URL: " + inputPanel.getUrlText());
+                Path downloadsPath = Paths.get(System.getProperty("user.home"), "Downloads");
+                downloadM3u8ToMp4(inputPanel.getUrlText(), downloadsPath.toString() + "\\output_video.mp4");
+            } else {
+                safeFile(inputPanel.getUrlText());
+            }
         } catch(Exception e){
             System.out.println("Exception caught!");
         }
@@ -120,6 +128,52 @@ public class DownloadPanel extends GridPane {
         }
         out.close();
         in.close();*/
+    }
+
+    // DailyMotion Download
+    public static void downloadM3u8ToMp4(String m3u8Url, String outputMp4Path) throws Exception {
+        List<String> command = new ArrayList<>();
+        command.add(".\\ffmpeg-n9.0-latest-win64-gpl-9.0\\bin\\ffmpeg"); // Or full path, e.g., "C:\\ffmpeg\\bin\\ffmpeg.exe"
+
+        // Pass a User-Agent header so Dailymotion's CDN does not reject the request
+        command.add("-user_agent");
+        command.add("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+
+        // Input M3U8 URL
+        command.add("-i");
+        command.add(m3u8Url);
+
+        // Copy video/audio streams directly without re-encoding (very fast)
+        command.add("-c");
+        command.add("copy");
+
+        // Fix AAC audio bitstream format for MP4 containers
+        command.add("-bsf:a");
+        command.add("aac_adtstoasc");
+
+        // Overwrite output file if it already exists
+        command.add("-y");
+        command.add(outputMp4Path);
+
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.redirectErrorStream(true); // Merge stderr into stdout so the process doesn't hang
+
+        Process process = processBuilder.start();
+
+        // Read FFmpeg console output to prevent buffer deadlock and monitor progress
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        }
+
+        int exitCode = process.waitFor();
+        if (exitCode == 0) {
+            System.out.println("Video successfully saved to: " + outputMp4Path);
+        } else {
+            throw new RuntimeException("FFmpeg failed with exit code: " + exitCode);
+        }
     }
 
     private static class DownloadTask extends Task<Void> {

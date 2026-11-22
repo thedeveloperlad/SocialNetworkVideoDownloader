@@ -233,6 +233,22 @@ public class InputPanel extends GridPane {
             System.out.println("dailyMotionJsonRaw= " + dailyMotionJsonRaw);
 
             JSONObject dailyMotionJson = dailyMotionParser.dailyMotionParserFile(dailyMotionJsonRaw, urlLink);
+
+
+            FileStructure fileStructure = new FileStructure(dailyMotionJson.getString("name"),
+                    dailyMotionJson.getString("link"),
+                    dailyMotionJson.getString("name"),
+                    dailyMotionJson.getString("description"),
+                    dailyMotionJson.getString("image"), "", "", "", "");
+
+            setUrlText(fileStructure.getUrlMp4());
+
+            // ContentPanel contentPanel = new ContentPanel();
+            contPanel.setName(dailyMotionJson.getString("name"));
+            contPanel.setDescription(dailyMotionJson.getString("description"));
+            contPanel.setThumbnailUrl(dailyMotionJson.getString("link"));
+            contPanel.setImage(dailyMotionJson.getString("image"));
+            contPanel.setImage(dailyMotionJson.getString("link"));
         }
     }
 
