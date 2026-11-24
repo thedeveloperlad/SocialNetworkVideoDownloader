@@ -94,6 +94,7 @@ public class ContentPanel extends GridPane {
 
     public void setImage(String imageUrl){
         // sFile file = new File(imageUrl);
+        System.out.println("imageUrl - : " + imageUrl);
         Image image = new Image(imageUrl);
         imageView.setImage(image);
     }

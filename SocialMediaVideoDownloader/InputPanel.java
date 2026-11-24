@@ -176,34 +176,17 @@ public class InputPanel extends GridPane {
 
             setUrlText(fileStructure.getUrlMp4());
 
-            // ContentPanel contentPanel = new ContentPanel();
             contPanel.setName(mlbJson.getString("name"));
             contPanel.setDescription(mlbJson.getString("description"));
             contPanel.setThumbnailUrl(mlbJson.getString("link"));
             contPanel.setImage(mlbJson.getString("image"));
 
-            /*
-            public FileStructure(String title, String urlMp4, String name, String description, String thumbnailUrl, String uploadDate, String duration, String contentUrl, String embedUrl) {
-        this.title = title;
-        this.urlMp4 = urlMp4;
-        this.name = name;
-        this.description = description;
-        this.thumbnailUrl = thumbnailUrl;
-        this.uploadDate = uploadDate;
-        this.duration = duration;
-        this.contentUrl = contentUrl;
-        this.embedUrl = embedUrl;
-    }
-            * */
         } else if(milbCheckBox.isSelected()) {
             System.out.println("MiLB Checkbox is checked");
             // String mlbJsonRaw = htmlParser.getMetaContentByScriptType(htmlParser.getHtmlDocument(getHtmlStr),"application/ld+json");
             String [] milbScriptRaw = htmlParser.getContentByScript(htmlParser.getHtmlDocument(getHtmlStr));
             String milbJsonRaw = milbParser.getJSONString(milbScriptRaw);
             milbJsonRaw = milbParser.removeInitData(milbJsonRaw);
-            System.out.println("milbJsonRaw: ");
-            System.out.println(milbJsonRaw);
-            System.out.println("\n");
 
             JSONObject milbJson = milbParser.milbParserFile(milbJsonRaw);
 
@@ -222,18 +205,16 @@ public class InputPanel extends GridPane {
             // contPanel.setImage(milbJson.getString("image"));
             contPanel.setImage(milbJson.getString("link"));
         } else if(dailyMotionCheckBox.isSelected()) {
-            System.out.println("dailyMotion Checkbox is checked");
             String dailyMotionID = dailyMotionParser.getDailyMotionID(urlLink);
-            System.out.println("dailyMotionID= " + dailyMotionID);
             String dailyMotionAPIUrl = dailyMotionParser.getDailyMotionURLApi(dailyMotionID);
-            System.out.println("dailyMotionAPIUrl= " + dailyMotionAPIUrl);
-            // String dailyMotionJsonRaw = htmlParser.getBody(htmlParser.getHtmlDocument(dailyMotionAPIUrl));
-
             String dailyMotionJsonRaw = urlParser.getStringFromURL(dailyMotionAPIUrl);
-            System.out.println("dailyMotionJsonRaw= " + dailyMotionJsonRaw);
+
+            // @ Testing prints
+            // System.out.println("dailyMotionID= " + dailyMotionID);
+            // System.out.println("dailyMotionAPIUrl= " + dailyMotionAPIUrl);
+            // System.out.println("dailyMotionJsonRaw= " + dailyMotionJsonRaw);
 
             JSONObject dailyMotionJson = dailyMotionParser.dailyMotionParserFile(dailyMotionJsonRaw, urlLink);
-
 
             FileStructure fileStructure = new FileStructure(dailyMotionJson.getString("name"),
                     dailyMotionJson.getString("link"),
@@ -243,14 +224,24 @@ public class InputPanel extends GridPane {
 
             setUrlText(fileStructure.getUrlMp4());
 
-            // ContentPanel contentPanel = new ContentPanel();
             contPanel.setName(dailyMotionJson.getString("name"));
             contPanel.setDescription(dailyMotionJson.getString("description"));
             contPanel.setThumbnailUrl(dailyMotionJson.getString("link"));
             contPanel.setImage(dailyMotionJson.getString("image"));
-            contPanel.setImage(dailyMotionJson.getString("link"));
         }
     }
+
+        /* @ FileStructure
+            public FileStructure(String title,
+                            String urlMp4,
+                            String name,
+                            String description,
+                            String thumbnailUrl,
+                            String uploadDate,
+                            String duration,
+                            String contentUrl,
+                            String embedUrl)
+          */
 
     public void errorMessage(String message){
         Alert a = new Alert(Alert.AlertType.NONE);
