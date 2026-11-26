@@ -1,9 +1,7 @@
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -24,6 +22,9 @@ public class DownloadPanel extends GridPane {
 
     Label statusLabel = new Label("");
     Button downloadButton = new Button("Download");
+    Label fileName = new Label("File Name: ");
+    TextField outputFileNameField = new TextField();
+    CheckBox defaultCheckBox = new CheckBox();
     InputPanel inputPanel;
     ProgressBar progressBar = new ProgressBar(0);
     // progressBar.setPrefWidth(300);
@@ -37,7 +38,18 @@ public class DownloadPanel extends GridPane {
 
         downloadButton.setOnAction(this::downloadButtonClick);
 
-        contentRow.getChildren().addAll(downloadButton, statusLabel);
+        defaultCheckBox.setSelected(true);
+        defaultCheckBox.setOnAction(event -> {
+            if (defaultCheckBox.isSelected()) {
+                outputFileNameField.disableProperty().bind(defaultCheckBox.selectedProperty());
+            } else {
+                outputFileNameField.disableProperty().bind(defaultCheckBox.selectedProperty());
+            }
+        });
+        outputFileNameField.setPrefWidth(380);
+        defaultCheckBox.setText("Default Name");
+
+        contentRow.getChildren().addAll(fileName, outputFileNameField, defaultCheckBox, downloadButton, statusLabel);
 
         Label paneTitle = new Label(" Download "); // Spaces prevent line collision
         paneTitle.setFont(Font.font("Arial", FontWeight.BOLD, 13));
@@ -64,13 +76,27 @@ public class DownloadPanel extends GridPane {
 
     private void downloadButtonClick(ActionEvent event) {
         System.out.println("URL: " + inputPanel.getUrlText());
+        String filePathName;
+        if (defaultCheckBox.isSelected()) {
+            filePathName = inputPanel.getUrlText();
+        } else {
+            if(!outputFileNameField.getText().isEmpty()) {
+                filePathName = outputFileNameField.getText();
+            } else {
+                filePathName = "NameEmpty_DefaultName";
+            }
+        }
+
         try{
             if(inputPanel.getUrlText().contains("dailymotion")){
                 System.out.println("Inside if URL: " + inputPanel.getUrlText());
                 Path downloadsPath = Paths.get(System.getProperty("user.home"), "Downloads");
                 downloadM3u8ToMp4(inputPanel.getUrlText(), downloadsPath.toString() + "\\output_video.mp4");
+
+                // @ Testing file name path
+                // downloadM3u8ToMp4(inputPanel.getUrlText(), downloadsPath.toString() + "\\"+ filePathName+".mp4");
             } else {
-                safeFile(inputPanel.getUrlText());
+                safeFile(inputPanel.getUrlText(), filePathName, defaultCheckBox.isSelected());
             }
         } catch(Exception e){
             System.out.println("Exception caught!");
@@ -78,15 +104,18 @@ public class DownloadPanel extends GridPane {
 
     }
 
+    public void setText(String text){
+        outputFileNameField.textProperty().setValue(text);
+    }
+
     // Method added from page:
-    public void safeFile(String src) throws IOException {
+    public void safeFile(String src, String saveFileName, boolean checkbox) throws IOException {
         downloadButton.setDisable(true);
         statusLabel.setText("Downloading...");
 
-
         Path downloadsPath = Paths.get(System.getProperty("user.home"), "Downloads");
 
-        DownloadTask downloadTask = new DownloadTask(src, downloadsPath.toString());
+        DownloadTask downloadTask = new DownloadTask(src, downloadsPath.toString(), saveFileName, checkbox);
 
         progressBar.progressProperty().bind(downloadTask.progressProperty());
 
@@ -179,10 +208,14 @@ public class DownloadPanel extends GridPane {
     private static class DownloadTask extends Task<Void> {
         private String fileUrl;
         private final String savePath;
+        private final String fileName;
+        private final boolean fileNameCheckBox;
 
-        public DownloadTask(String fileUrl, String savePath) {
+        public DownloadTask(String fileUrl, String savePath,  String name, boolean checkbox) {
             this.fileUrl = fileUrl;
             this.savePath = savePath;
+            this.fileName = name;
+            this.fileNameCheckBox = checkbox;
         }
 
         @Override
@@ -199,10 +232,20 @@ public class DownloadPanel extends GridPane {
                 fileUrl = fileUrl.substring(1, indexname);
             }
 
-            indexname = fileUrl.lastIndexOf("/");
-            String name = fileUrl.substring(indexname, fileUrl.length());
+            String name = "";
+            if(fileNameCheckBox)
+            {
+                indexname = fileUrl.lastIndexOf("/");
+                name = fileUrl.substring(indexname, fileUrl.length());
+            } else {
+                name = fileName;
+            }
 
-            System.out.println("Name File: " + name);
+            if(!name.contains("/"))
+            {
+                name = "/"+ name + ".mp4";
+
+            }
 
             try (InputStream input = new BufferedInputStream(connection.getInputStream());
                  FileOutputStream output = new FileOutputStream(savePath + name)) {
